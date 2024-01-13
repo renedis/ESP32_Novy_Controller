@@ -29,10 +29,20 @@ shell_command:
   novylight: 'curl -k "http://192.168.1.5/toggleLight"'
 ```
 ### MQTT control
-Controlling via MQTT can be done by sending a RAW payload to the topic e.g.
+Controlling via MQTT can be done by sending a RAW payload to the topic (using minus as an example):
 ```
 NOVY/button/minus/ON
 ```
-Making it work with home assistant auto discory is a work in progress.
+
+Adding it in HomeAssistant .yaml can be done like this (using light as an example):
+```
+mqtt:
+  - button:
+      unique_id: novy_light
+      name: "NOVY-light"
+      command_topic: "NOVY/button/light"
+      payload_press: "ON"
+```
+**Making it work with HomeAssistant auto discovery is a work in progress.
 ## Case
-Working on a case!
+Working on a 3D printable .stl file!
