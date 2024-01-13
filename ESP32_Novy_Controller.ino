@@ -86,6 +86,7 @@ void setup() {
     ArduinoOTA.setHostname(HOSTNAME.c_str());
     // OTA password for updates image via WiFi
     ArduinoOTA.setPassword(OTAPASSWORD.c_str());
+    // ArduinoOTA.setPassword("novy");
 
   ArduinoOTA
     .onStart([]() {
@@ -272,25 +273,23 @@ void callback(char* topic, byte* payload, unsigned int length) {
     addToLogBuffer(message);
 
     if (strcmp(topic, (String(HOSTNAME) + "/button/light").c_str()) == 0) {
-        if (strcmp((char*)payload, "ON") == 0) {
-            PressLight(0);
-        }
-    } else if (strcmp(topic, (String(HOSTNAME) + "/button/power").c_str()) == 0) {
-        if (strcmp((char*)payload, "ON") == 0) {
-            PressPower(0);
-        }
-    } else if (strcmp(topic, (String(HOSTNAME) + "/button/plus").c_str()) == 0) {
-        if (strcmp((char*)payload, "ON") == 0) {
-            PressPlus(0);
-        }
-    } else if (strcmp(topic, (String(HOSTNAME) + "/button/minus").c_str()) == 0) {
-        if (strcmp((char*)payload, "ON") == 0) {
-            PressMinus(0);
-        }
-    } else if (strcmp(topic, (String(HOSTNAME) + "/button/novy").c_str()) == 0) {
-        if (strcmp((char*)payload, "ON") == 0) {
-            PressNovy(0);
-        }
+        transmitter.send((NOVY_DEVICE_CODE[0] + NOVY_PREFIX + NOVY_COMMAND_LIGHT).c_str());
+    }
+
+    if (strcmp(topic, (String(HOSTNAME) + "/button/power").c_str()) == 0) {
+        transmitter.send((NOVY_DEVICE_CODE[0] + NOVY_PREFIX + NOVY_COMMAND_POWER).c_str());
+    }
+
+    if (strcmp(topic, (String(HOSTNAME) + "/button/plus").c_str()) == 0) {
+        transmitter.send((NOVY_DEVICE_CODE[0] + NOVY_PREFIX + NOVY_COMMAND_PLUS).c_str());
+    }
+
+    if (strcmp(topic, (String(HOSTNAME) + "/button/minus").c_str()) == 0) {
+        transmitter.send((NOVY_DEVICE_CODE[0] + NOVY_PREFIX + NOVY_COMMAND_MINUS).c_str());
+    }
+
+    if (strcmp(topic, (String(HOSTNAME) + "/button/novy").c_str()) == 0) {
+        transmitter.send((NOVY_DEVICE_CODE[0] + NOVY_PREFIX + NOVY_COMMAND_NOVY).c_str());
     }
 }
 
