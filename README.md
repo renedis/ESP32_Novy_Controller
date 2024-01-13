@@ -1,25 +1,37 @@
-# ESP32 Novy Commander
+# ESP32 Novy Controller
 
-The main goal of this project is to control the lights of the Novy Crystal 26050 cooking hood when the Zigbee kitchen lights are turned on or off.
-The ESP32 looks at the API of Home Assistant to determine the on or off state of the kitchen lights, and sends a 433mhz signal to the connected 433mhz transmitter.
-The ip address of the ESP32 shows a basic status web page with the ability to reboot the device.
- 
-![ESP32 with a 433mhz transmitter soldered onto it](https://github.com/SpectraCoder/ESP32_Novy_Commander/blob/main/ESP32_Novy_Commander.jpg?raw=true)
+The main goal of this project is to control the lights of a Novy cooking hood.
+The ESP32C3 connects to WiFi and MQTT. It will serve a webpage where you can control the Novy hood via a 433mhz signal.
 
-For convenience, I soldered the XD-FST FS1000A 433mhz transmitter directly to the ESP32.
-By setting pin 22 to HIGH, it powers the transmitter while pin 23 is used to send data.
-The pin next to those is ground.
+Webpage example:
+
+![Webpage](https://github.com/renedis/ESP32_Novy_Controller/blob/main/novy-webpage.jpg?raw=true)
+
+Hardware example:
+
+![ESP32 with a 433mhz transmitter soldered onto it](https://github.com/renedis/ESP32_Novy_Controller/blob/main/novy-controller.jpeg?raw=true)
+
+I soldered a FS1000A 433mhz transmitter directly to the ESP32 on PIN 3, PIN 4 and Ground.
+By setting pin 4 to HIGH, it powers the transmitter while pin 3 is used to send data.
 
 ## Usage
 
-To use this in your own setup, make a copy of the [***config.example.h***](https://github.com/SpectraCoder/ESP32_Novy_Commander/blob/main/config.example.h) file. Rename it to ***config.h***.
+To use this in your own setup, make a copy of the [***config.example.h***](https://github.com/renedis/ESP32_Novy_Controller/blob/main/config.example.h) file. Rename it to ***config.h***.
 Change the contents of the file to your own needs.
 
-To be able to access the API of your Home Assistant, you will need to generate a [Long-Lived Access Token](https://www.home-assistant.io/docs/authentication/).
-Log in onto your Home Assistant web interface, and click on your profile name. There, on the bottom of the page, you can generate the token. Copy and paste it into the ***config.h*** file.
+To control it manually via the webpage you simply click the button on the webpage.
+
+To control it via a home automation like HomeAssistant you can simply call buttons via weburl (e.g. http://192.168.1.5/toggleLight) and it will toggle the light. Where 192.168.1.5 is the IP address of the ESP32 novy controller.
+To make it a clickable button in HomeAssistant you can add a shell_command button e.g.:
+
+
+```
+shell_command:
+  novylight: 'curl -k "http://192.168.1.5/toggleLight"'
+```
+
+Controlling via MQTT is a work in progress. (it already subscribes but won't sent a the 433mhz signal if a message is received via MQTT.
 
 ## Case
 
-I also designed and 3D printed a case for the ESP32 to fit the 433mhz transmitter. You can find the .stl file in [***/Case***](https://github.com/SpectraCoder/ESP32_Novy_Commander/blob/main/Case/).
-
-![ESP32 with a 433mhz transmitter into a 3D printed case](https://github.com/SpectraCoder/ESP32_Novy_Commander/blob/main/Case/Case.jpg?raw=true)
+Working on a case!
