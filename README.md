@@ -19,19 +19,20 @@ By setting pin 4 to HIGH, it powers the transmitter while pin 3 is used to send 
 To use this in your own setup, make a copy of the [***config.example.h***](https://github.com/renedis/ESP32_Novy_Controller/blob/main/config.example.h) file. Rename it to ***config.h***.
 Change the contents of the file to your own needs.
 
+### Webpage control
 To control it manually via the webpage you simply click the button on the webpage.
-
+### HA HTTP shell_command request control
 To control it via a home automation like HomeAssistant you can simply call buttons via weburl (e.g. http://192.168.1.5/toggleLight) and it will toggle the light. Where 192.168.1.5 is the IP address of the ESP32 novy controller.
 To make it a clickable button in HomeAssistant you can add a shell_command button e.g.:
-
-
 ```
 shell_command:
   novylight: 'curl -k "http://192.168.1.5/toggleLight"'
 ```
-
-Controlling via MQTT is a work in progress. (it already subscribes but won't sent a the 433mhz signal if a message is received via MQTT.
-
+### MQTT control
+Controlling via MQTT can be done by sending a RAW payload to the topic e.g.
+```
+NOVY/button/minus/ON
+```
+Making it work with home assistant auto discory is a work in progress.
 ## Case
-
 Working on a case!
