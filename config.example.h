@@ -1,31 +1,24 @@
-/// Make a copy of this file, and rename it to "config.h" to make it work with the EPS32_Novy_Commander.ino script.
-/// Change the variables in ths file to your needs. 
-const String HOSTNAME = "ESP32 Novy Commander";
-const char* SSID = "Your wifi name";
-const char* PASSWORD =  "Your password";
-const int REFRESH_TIME = 1000;  ///milliseconds
+#ifndef CONFIG_H
+#define CONFIG_H
+const String HOSTNAME = "<HOSTNAME>";
+const String OTAPASSWORD = "<OTAPASSWORD>";
+const char* SSID = "<YOURWIFINAME>";
+const char* PASSWORD =  "<YOURWIFIPASSWORD";
+const char* MQTT_SERVER = "YOURMQTTSERVER";
+const int MQTT_PORT = 1883;
+const char* MQTT_USER = "YOURMQTTUSERNAME";
+const char* MQTT_PASSWORD = "YOURMQTTPASSWORD";
 
-/// For convenience, I soldered the 433mhz transmitter directly to the ESP32.
-/// By setting pin 22 to HIGH, it powers the transmitter while pin 23 is used to send data.
-/// The pin next to those is ground.
-const int TRANSMIT_433MHZ_PIN = 23;
-const int POWER_433MHZ_PIN = 22;
+// Do not edit MQTT_CLIENT_ID. It matches the hostname.
+const char* MQTT_CLIENT_ID = "HOSTNAME";
 
-/// In my own home I have two wifi routers using the same SSID (wifi name). 
-/// The ESP32 isn't very good at picking the strongest signal by itself reliably, so I needed a way to tell it which router to pick.
-/// By defining the Mac address of the router in the ROUTER_TO_CONNECT_TO variable, it only connects to that router.
-/// I made two variables for debugging purposes.
-const uint8_t BSSID_BEDROOM[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; /// Mac Address of the bedroom router to connect to
-const uint8_t BSSID_LIVINGROOM[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; /// Mac Address of the living room router to connect to
+// This is the GPIO pin which transmits the 433.92 mhz data
+const int TRANSMIT_433MHZ_PIN = 3;
 
-const uint8_t* ROUTER_TO_CONNECT_TO = BSSID_BEDROOM; /// Selects the router to connect to
+// This is the GPIO pin which provides power to the 433.92 mhz transceiver when data is sent
+const int POWER_433MHZ_PIN = 4;
 
-/// Create a Long-Lived Access Token in Home Assistant to access its API. Be sure to add the word "Bearer " (with a space after it) in front of the token.
-const char* HOME_ASSISTANT_TOKEN = "Bearer kajhfsdklfasglksajglkasglaslglksadjglkjdsglkjagjdgbflbkdsfjdlsdfasdlkfhghasjfgeyrtaefhjgsdkjhfgsjfgkaekgfasjfbsdvnbbvzvbshdkgfgjsdalgdslkaglksjdasdgagagaga";
-const char* HOME_ASSISTANT_LIGHT_URL = "http://192.168.1.7:80/api/states/light.examplelight"; /// Url of the Home Assistant API lights you want to use.
-
-/// The 433mhz Novy device codes I borrowed from https://github.com/abelgomez/rf-mqtt-bridge/blob/master/src/NovyController.cpp
-/// Programmable code (from 1 to 10), see 4 first bits above
+// Do not edit. This is the Novy device code identification.
 static const String NOVY_DEVICE_CODE[] = {
     "0101",
     "1001",
@@ -39,12 +32,14 @@ static const String NOVY_DEVICE_CODE[] = {
     "1000",
 };
 
-/// Prefix (next 4 bits, not sure what it means, if it is always fixed, or if it is part of the command code)
+// Do not edit. This is the Novy prefix code identification.
 static const String NOVY_PREFIX = "0101";
 
-/// Commands to be sent (code + prefix + command)
+// Do not edit. This is the Novy command code identification.
 static const String NOVY_COMMAND_LIGHT = "0111010001";
 static const String NOVY_COMMAND_POWER = "0111010011";
 static const String NOVY_COMMAND_PLUS =  "0101";
 static const String NOVY_COMMAND_MINUS = "0110";
 static const String NOVY_COMMAND_NOVY =  "0100";
+
+#endif  // CONFIG_H
