@@ -13,8 +13,8 @@ const char* MQTT_PASSWORD = "YOURMQTTPASSWORD";
 // Do not edit MQTT_CLIENT_ID. It matches the hostname.
 const char* MQTT_CLIENT_ID = "HOSTNAME";
 
-// This is the GPIO pin which transmits the 433.92 mhz data PIN 3
-const int TRANSMIT_433MHZ_PIN = 3;
+// This is the GPIO pin which transmits the 433.92 mhz data PIN 3. If PIN 3 is used for "UART0 RX", use PIN 8!
+const int TRANSMIT_433MHZ_PIN = 8;
 
 // This is the GPIO pin which provides power to the 433.92 mhz transceiver when data is sent PIN 4
 const int POWER_433MHZ_PIN = 4;
