@@ -5,11 +5,11 @@ The ESP32-C3-mini connects to WiFi, MQTT and HomeAssistant (via MQTT). It will s
 
 Webpage example:
 
-![Webpage](https://github.com/renedis/ESP32_Novy_Controller/blob/main/novy-webpage.jpg?raw=true)
+![Webpage](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/novy-webpage.jpg?raw=true)
 
 Hardware example:
 
-![ESP32 with a 433mhz transmitter soldered onto it](https://github.com/renedis/ESP32_Novy_Controller/blob/main/ESPHW1.jpeg?raw=true)
+![ESP32 with a 433mhz transmitter soldered onto it](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/ESPHW1.jpeg?raw=true)
 
 I soldered a FS1000A 433mhz transmitter directly to the ESP32 on PIN 3, PIN 4 and Ground. You can also solder VCC of the FS1000A directly to 3.3V of the ESP for more current.
 By setting pin 4 to HIGH, it powers the transmitter while pin 3 is used to send data.
@@ -28,7 +28,7 @@ Auto discovery is added. It's done via MQTT and should add all buttons. It's don
 ## Case
  3D printable .stl file is here! It's already made but fitment could be better.
  
-![ESP32 printed case](https://github.com/renedis/ESP32_Novy_Controller/blob/main/ESPHW2.jpeg?raw=true)
+![ESP32 printed case](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/ESPHW2.jpeg?raw=true)
 
 
 
