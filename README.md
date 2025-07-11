@@ -13,6 +13,7 @@ Hardware example:
 
 I soldered a FS1000A 433mhz transmitter directly to the ESP32 on PIN 3, PIN 4 and Ground. You can also solder VCC of the FS1000A directly to 3.3V of the ESP for more current.
 By setting pin 4 to HIGH, it powers the transmitter while pin 3 is used to send data.
+***Keep in mind that the FS1000A is not very powerful. A good and better drop-in replacement is a STX882 transmitter. Equilly priced online but stronger signal ouput.***
 
 ## Usage
 
