@@ -4,6 +4,7 @@ const String HOSTNAME = "<HOSTNAME>";
 const String OTAPASSWORD = "<OTAPASSWORD>";
 const char* SSID = "<YOURWIFINAME>";
 const char* PASSWORD =  "<YOURWIFIPASSWORD";
+const String MQTT_PREFIX = "ESP";
 const char* MQTT_SERVER = "YOURMQTTSERVER";
 const int MQTT_PORT = 1883;
 const char* MQTT_USER = "YOURMQTTUSERNAME";
@@ -12,10 +13,10 @@ const char* MQTT_PASSWORD = "YOURMQTTPASSWORD";
 // Do not edit MQTT_CLIENT_ID. It matches the hostname.
 const char* MQTT_CLIENT_ID = "HOSTNAME";
 
-// This is the GPIO pin which transmits the 433.92 mhz data
+// This is the GPIO pin which transmits the 433.92 mhz data PIN 3
 const int TRANSMIT_433MHZ_PIN = 3;
 
-// This is the GPIO pin which provides power to the 433.92 mhz transceiver when data is sent
+// This is the GPIO pin which provides power to the 433.92 mhz transceiver when data is sent PIN 4
 const int POWER_433MHZ_PIN = 4;
 
 // Do not edit. This is the Novy device code identification.
