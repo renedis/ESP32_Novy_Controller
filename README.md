@@ -1,54 +1,82 @@
 # ESP32 Novy Controller
 
-The main goal of this project is to control the lights of a Novy cooking hood.
-The ESP32-C3-mini connects to WiFi, MQTT and HomeAssistant (via MQTT). It will serve a webpage where you can control the Novy hood via a 433mhz signal.
+A WiFi-enabled controller for Novy cooking hoods using ESP32-C3-mini with 433MHz RF transmission.
 
-Webpage example:
+## Overview
+
+This project enables remote control of Novy cooking hood lights through:
+- **Web interface** – Direct browser control
+- **MQTT integration** – For home automation systems
+- **Home Assistant** – Auto-discovery support via MQTT
+
+### Web Interface Preview
 
 ![Webpage](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/novy-webpage.jpg?raw=true)
 
-Hardware example:
+### Hardware Setup
 
 ![ESP32 with a 433mhz transmitter soldered onto it](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/ESPHW1.jpeg?raw=true)
 
-I soldered a FS1000A 433mhz transmitter directly to the ESP32 on PIN 3, PIN 4 and Ground. You can also solder VCC of the FS1000A directly to 3.3V of the ESP for more current.
-By setting pin 4 to HIGH, it powers the transmitter while pin 3 is used to send data.
-***Keep in mind that the FS1000A is not very powerful. A good and better drop-in replacement is a STX882 transmitter. Equilly priced online but stronger signal ouput.***
+## Hardware Requirements
+
+- ESP32-C3-mini development board
+- FS1000A 433MHz transmitter (or STX882 for better range)
+- Basic soldering equipment
+
+### Wiring
+
+Connect the 433MHz transmitter to your ESP32:
+- **Data pin** → GPIO 8
+- **Power control VCC** → GPIO 4  (or directly connect **VCC** → 3.3V for more current)
+- **Ground** → GND
+
+> **💡 Tip:** The STX882 transmitter is a better drop-in replacement for the FS1000A – similar price but stronger signal output.
+
+The power control setup (GPIO 4 → HIGH) powers the transmitter only when needed, while GPIO 8 handles data transmission.
+
+## Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/renedis/ESP32_Novy_Controller.git
+   ```
+
+2. **Configure your settings**
+   - Copy `config.example.h` to `config.h`
+   - Update the configuration with your WiFi credentials and MQTT settings
+
+3. **Upload to ESP32**
+   - Use Arduino IDE or PlatformIO to compile and upload
 
 ## Usage
 
-To use this in your own setup, make a copy of the [***config.example.h***](https://github.com/renedis/ESP32_Novy_Controller/blob/main/config.example.h) file. Rename it to ***config.h***.
-Change the contents of the file to your own needs.
+### Web Control
 
-### Webpage control
-To control it manually via the webpage you simply click the button on the webpage.
+Access the web interface by navigating to your ESP32's IP address in a browser. Click the buttons to control your Novy hood.
 
-### HomeAssistant auto discovery
-Auto discovery is added. It's done via MQTT and should add all buttons. It's done as a button and not a toggle switch because 433MHz is a one-way protocol.
+### Home Assistant Integration
 
-## Case
- 3D printable .stl file is here! It's already made but fitment could be better.
- 
-![ESP32 printed case](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/ESPHW2.jpeg?raw=true)
+#### Automatic Discovery (Recommended)
 
+The controller supports MQTT auto-discovery. Once connected, all buttons will automatically appear in Home Assistant as button entities.
 
+> **Note:** Buttons are used instead of toggle switches because 433MHz is a one-way communication protocol.
 
-## LEGACY options
-### Manual HA HTTP shell_command request control
-To control it via a home automation like HomeAssistant you can simply call buttons via weburl (e.g. http://192.168.1.5/toggleLight) and it will toggle the light. Where 192.168.1.5 is the IP address of the ESP32 novy controller.
-To make it a clickable button in HomeAssistant you can add a shell_command button e.g.:
-```
+#### Manual Configuration (Legacy)
+
+<details>
+<summary>Click to expand legacy configuration options</summary>
+
+##### HTTP Shell Commands
+
+```yaml
 shell_command:
   novylight: 'curl -k "http://192.168.1.5/toggleLight"'
 ```
-### MQTT control
-Controlling via MQTT can be done by sending a RAW payload to the topic (using minus as an example):
-```
-NOVY/button/minus/ON
-```
 
-Adding it in HomeAssistant .yaml can be done like this (using light as an example):
-```
+##### Manual MQTT Setup
+
+```yaml
 mqtt:
   - button:
       unique_id: novy_light
@@ -56,3 +84,31 @@ mqtt:
       command_topic: "NOVY/button/light"
       payload_press: "ON"
 ```
+
+##### Direct MQTT Control
+
+Send payload to topic:
+```
+NOVY/button/minus/ON
+```
+
+</details>
+
+## 3D Printed Case
+
+A printable case is available in the repository:
+
+![ESP32 printed case](https://github.com/renedis/ESP32_Novy_Controller/blob/main/files/ESPHW2.jpeg?raw=true)
+
+> **Note:** The case fits but could use some refinement for better fitment.
+
+## API Endpoints
+
+| Endpoint                          | Action               |
+|------------------------------------|----------------------|
+| `http://<ESP32_IP>/toggleLight`    | Toggle hood light    |
+| `http://<ESP32_IP>/...`            | Other controls as configured |
+
+## Contributing
+
+Feel free to submit issues and pull requests to improve this project.
