@@ -3,12 +3,12 @@
 const String HOSTNAME = "<HOSTNAME>";
 const String OTAPASSWORD = "<OTAPASSWORD>";
 const char* SSID = "<YOURWIFINAME>";
-const char* PASSWORD =  "<YOURWIFIPASSWORD";
+const char* PASSWORD =  "<YOURWIFIPASSWORD>";
 const String MQTT_PREFIX = "ESP";
-const char* MQTT_SERVER = "YOURMQTTSERVER";
+const char* MQTT_SERVER = "<YOURMQTTSERVER>";
 const int MQTT_PORT = 1883;
-const char* MQTT_USER = "YOURMQTTUSERNAME";
-const char* MQTT_PASSWORD = "YOURMQTTPASSWORD";
+const char* MQTT_USER = "<YOURMQTTUSERNAME>";
+const char* MQTT_PASSWORD = "<YOURMQTTPASSWORD>";
 
 // Do not edit MQTT_CLIENT_ID. It matches the hostname.
 const char* MQTT_CLIENT_ID = "HOSTNAME";
