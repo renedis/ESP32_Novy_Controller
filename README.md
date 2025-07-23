@@ -1,6 +1,6 @@
 # ESP32 Novy Controller
 
-A WiFi-enabled controller for Novy cooking hoods using ESP32-C3-mini with 433MHz RF transmission.
+A WiFi-enabled controller for Novy cooking hoods using ESP32-C3-mini with 433MHz RF transmission (STX882 or FS1000A).
 
 ## Overview
 
@@ -19,20 +19,20 @@ This project enables remote control of Novy cooking hood lights through:
 
 ## Hardware Requirements
 
-- ESP32-C3-mini development board
-- FS1000A 433MHz transmitter (or STX882 for better range)
+- ESP32-C3-mini development board (with external antenna if range is WiFi range is not enough)
+- TX882 433MHz transmitter (with antenna for better range) ~~FS1000A 433MHz transmitter~~
 - Basic soldering equipment
 
 ### Wiring
 
 Connect the 433MHz transmitter to your ESP32:
-- **Data pin** → GPIO 8
-- **Power control VCC** → GPIO 4  (or directly connect **VCC** → 3.3V for more current)
-- **Ground** → GND
+- **Data pin** → GPIO 4
+- **VCC pin** → 3.3V or GPIO 3  (directly connect **VCC** → 3.3V for more current)
+- **GND pin** → GND
 
-> **💡 Tip:** The STX882 transmitter is a better drop-in replacement for the FS1000A – similar price but stronger signal output.
+> **💡 Tip:** The STX882 transmitter is a much better drop-in replacement for the FS1000A – similar price but stronger signal output.
 
-The power control setup (GPIO 4 → HIGH) powers the transmitter only when needed, while GPIO 8 handles data transmission.
+The power control setup (GPIO 3 → HIGH) powers the transmitter only when needed, while GPIO 4 handles data transmission.
 
 ## Setup Instructions
 
