@@ -1,0 +1,318 @@
+<!-- ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0 -->
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVY-RF</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base-100:#1e2130;
+  --base-200:#191b29;
+  --base-300:#141621;
+  --base-content:#e8edf8;
+  --base-content-muted:rgba(232,237,248,.6);
+  --primary:#6366f1;
+  --primary-hover:#4f46e5;
+  --success:#4ade80;
+  --warning:#fbbf24;
+  --error:#f87171;
+  --info:#38bdf8;
+  --border-color:rgba(255,255,255,.08);
+  --radius-box:.5rem;
+  --radius-field:.25rem;
+  --font:ui-sans-serif,system-ui,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+html{font-size:16px;background:var(--base-300);color:var(--base-content);font-family:var(--font);min-height:100vh}
+a{color:inherit;text-decoration:none}
+.navbar{background:var(--base-200);border-bottom:1px solid var(--border-color);display:flex;flex-wrap:wrap;row-gap:.5rem;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.navbar-brand{display:flex;align-items:center;gap:.6rem;font-size:1.1rem;font-weight:700;letter-spacing:-.01em}
+.navbar-center{display:flex;gap:.25rem}
+.navbar-end{display:flex;align-items:center;gap:.75rem}
+.nav-link{display:flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:500;color:var(--base-content-muted);padding:.4rem .75rem;border-radius:var(--radius-field);transition:all .15s}
+.nav-link:hover{color:var(--base-content);background:rgba(255,255,255,.06)}
+.nav-link.active{color:var(--base-content);background:rgba(255,255,255,.08)}
+.peers{display:flex;align-items:center;min-width:0}
+.peers[hidden]{display:none}
+.peer-select{appearance:none;-webkit-appearance:none;color-scheme:dark;max-width:10rem;background:var(--base-100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23888daa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .6rem center;border:1px solid var(--border-color);border-radius:var(--radius-field);padding:.3rem 1.8rem .3rem .7rem;font-family:inherit;font-size:.8rem;font-weight:600;color:var(--base-content);text-overflow:ellipsis;cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s}
+.peer-select:hover{border-color:rgba(255,255,255,.2)}
+.peer-select:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+@media(max-width:640px){.navbar-end{margin-left:auto}.peer-select{max-width:11rem;font-size:16px}}
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px;border:1px solid}
+.badge-success{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--success)}
+.badge-warning{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:var(--warning)}
+.badge-error{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);color:var(--error)}
+.badge-neutral{background:rgba(255,255,255,.06);border-color:var(--border-color);color:var(--base-content-muted)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.badge-success .dot{box-shadow:0 0 5px var(--success)}
+.badge-warning .dot{box-shadow:0 0 5px var(--warning)}
+.badge-error .dot{box-shadow:0 0 5px var(--error)}
+.page{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+.section-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--base-content-muted);margin:0 0 1rem;opacity:.7}
+.section-label+.card{margin-bottom:1.75rem}
+.card{background:var(--base-100);border:1px solid var(--border-color);border-radius:var(--radius-box);padding:1.5rem}
+.card-title{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--base-content-muted);margin-bottom:1.25rem;opacity:.7}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
+.card-head .card-title{margin-bottom:0}
+.btn-grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.btn{font-size:.875rem;font-weight:600;padding:.5rem 1.1rem;border-radius:var(--radius-field);border:none;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn-ghost{background:transparent;color:var(--base-content-muted);border:1px solid var(--border-color)}
+.btn-ghost:hover{color:var(--base-content);background:rgba(255,255,255,.06)}
+.btn-cmd{background:var(--base-200);color:var(--base-content);border:1px solid var(--border-color);padding:.9rem 1rem;font-size:.9rem}
+.btn-cmd:hover{border-color:var(--primary);background:rgba(99,102,241,.12)}
+.btn-cmd:active{transform:translateY(1px)}
+.btn-cmd.sent{border-color:var(--success);background:rgba(74,222,128,.12)}
+.btn-cmd.off{color:var(--error)}
+.btn-small{padding:.35rem .75rem;font-size:.75rem}
+.group-label{font-size:.7rem;color:var(--base-content-muted);margin:1.1rem 0 .5rem;opacity:.8}
+.group-label:first-child{margin-top:0}
+.stats-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-bottom:1.75rem}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--border-color)}
+.stat-row:last-child{border-bottom:none}
+.stat-key{font-size:.8rem;color:var(--base-content-muted)}
+.stat-val{font-size:.8rem;font-weight:600;font-family:var(--font-mono);color:var(--base-content);text-align:right;word-break:break-all}
+.hint{font-size:.7rem;color:var(--base-content-muted);opacity:.7;margin-top:.75rem}
+.console{background:#0d0f1a;border:1px solid var(--border-color);border-radius:var(--radius-box);padding:.75rem;font-family:var(--font-mono);font-size:.72rem;line-height:1.5;color:#e0e0e0;height:320px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.log-ts{color:#6e6e73}
+.log-rf{color:var(--success)}
+.log-mqtt{color:var(--info)}
+.log-warn{color:var(--warning)}
+.log-err{color:var(--error)}
+.log-sys{color:#c4b5fd}
+.toggle-wrap{display:flex;align-items:center;gap:.5rem}
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0;display:inline-block}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--base-200);border:1px solid var(--border-color);border-radius:999px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:13px;width:13px;left:3px;top:3px;background:rgba(232,237,248,.4);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--primary);border-color:var(--primary)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(17px);background:#fff}
+.toggle-label{font-size:.75rem;color:var(--base-content-muted)}
+footer{max-width:1200px;margin:0 auto;padding:1rem 1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.75rem;color:var(--base-content-muted);border-top:1px solid var(--border-color)}
+.mono{font-family:var(--font-mono)}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(1.5rem);opacity:0;background:var(--base-100);border:1px solid var(--border-color);border-radius:var(--radius-box);padding:.65rem 1.1rem;font-size:.85rem;font-weight:500;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(74,222,128,.4);color:var(--success)}
+.toast.err{border-color:rgba(248,113,113,.4);color:var(--error)}
+@media(max-width:640px){.page{padding:1.25rem 1rem}.navbar{padding:.75rem 1rem}.navbar-center{display:none}.btn-grid{grid-template-columns:repeat(2,1fr)}footer{flex-direction:column;align-items:flex-start}}
+</style>
+<script src="/peers.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 16.1a10 10 0 0 1 0-8.2M19.1 7.9a10 10 0 0 1 0 8.2M7.8 13.4a4.5 4.5 0 0 1 0-2.8M16.2 10.6a4.5 4.5 0 0 1 0 2.8"/><circle cx="12" cy="12" r="1.5"/></svg>
+    <span id="brand">NOVY-RF</span>
+  </div>
+  <div class="navbar-center">
+    <a href="/" class="nav-link active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/config" class="nav-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Settings
+    </a>
+  </div>
+  <div class="navbar-end">
+    <nav id="peers" class="peers" hidden aria-label="Peers"></nav>
+    <span class="badge badge-neutral" id="status-badge"><span class="dot"></span><span id="status-text">Connecting</span></span>
+  </div>
+</nav>
+
+<main class="page">
+  <p class="section-label">NOVY hood</p>
+  <div class="card">
+    <div class="btn-grid">
+      <button type="button" class="btn btn-cmd" data-cmd="toggleLight">Light</button>
+      <button type="button" class="btn btn-cmd" data-cmd="toggleBrightness">Brightness</button>
+      <button type="button" class="btn btn-cmd" data-cmd="toggleBrightnesslow">Brightness low</button>
+      <button type="button" class="btn btn-cmd" data-cmd="togglePower">Power</button>
+      <button type="button" class="btn btn-cmd" data-cmd="togglePlus">Plus</button>
+      <button type="button" class="btn btn-cmd" data-cmd="toggleMinus">Minus</button>
+      <button type="button" class="btn btn-cmd" data-cmd="toggleNovy">Novy</button>
+    </div>
+  </div>
+
+  <p class="section-label">Ceiling fan</p>
+  <div class="card">
+    <div class="group-label">Speed</div>
+    <div class="btn-grid">
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed1">Speed 1</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed2">Speed 2</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed3">Speed 3</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed4">Speed 4</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed5">Speed 5</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_speed6">Speed 6</button>
+      <button type="button" class="btn btn-cmd off" data-cmd="fan_off">Fan Off</button>
+    </div>
+    <div class="group-label">Light, direction and timer</div>
+    <div class="btn-grid">
+      <button type="button" class="btn btn-cmd" data-cmd="fan_light">Light</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_forward">Forward</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_reverse">Reverse</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_timer1h">1H Timer</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_timer2h">2H Timer</button>
+      <button type="button" class="btn btn-cmd" data-cmd="fan_timer4h">4H Timer</button>
+      <button type="button" class="btn btn-cmd off" data-cmd="fan_all_off">All Off</button>
+      <!-- Wave stays hidden, as in firmware 2.3; /fan_wave and the HA button still work -->
+      <button type="button" class="btn btn-cmd" data-cmd="fan_wave" style="display:none">Wave</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="card">
+      <div class="card-title">Tracked state</div>
+      <div class="stat-row"><span class="stat-key">Hood light</span><span class="stat-val" id="v-novy-light">--</span></div>
+      <div class="stat-row"><span class="stat-key">Fan speed</span><span class="stat-val" id="v-fan-speed">--</span></div>
+      <div class="stat-row"><span class="stat-key">Fan light</span><span class="stat-val" id="v-fan-light">--</span></div>
+      <div class="stat-row"><span class="stat-key">Fan direction</span><span class="stat-val" id="v-fan-dir">--</span></div>
+      <div class="stat-row"><span class="stat-key">Last command</span><span class="stat-val" id="v-last">--</span></div>
+      <div class="stat-row"><span class="stat-key">Status LED (HA light)</span><span class="stat-val" id="v-led">--</span></div>
+      <div class="hint">Counted from the commands sent since boot; the remotes are not seen.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Device</div>
+      <div class="stat-row"><span class="stat-key">Firmware</span><span class="stat-val" id="v-fw">--</span></div>
+      <div class="stat-row"><span class="stat-key">Rollback target</span><span class="stat-val" id="v-other">--</span></div>
+      <div class="stat-row"><span class="stat-key">Uptime</span><span class="stat-val" id="v-uptime">--</span></div>
+      <div class="stat-row"><span class="stat-key">WiFi</span><span class="stat-val" id="v-wifi">--</span></div>
+      <div class="stat-row"><span class="stat-key">IP</span><span class="stat-val" id="v-ip">--</span></div>
+      <div class="stat-row"><span class="stat-key">MQTT</span><span class="stat-val" id="v-mqtt">--</span></div>
+      <div class="stat-row"><span class="stat-key">Heap</span><span class="stat-val" id="v-heap">--</span></div>
+      <div class="stat-row"><span class="stat-key">Time</span><span class="stat-val" id="v-time">--</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">Event log</div>
+      <div class="toggle-wrap">
+        <label class="toggle"><input type="checkbox" id="log-auto" checked><span class="toggle-slider"></span></label>
+        <span class="toggle-label">Auto-scroll</span>
+        <button type="button" class="btn btn-ghost btn-small" id="log-clear">Clear</button>
+      </div>
+    </div>
+    <div class="console" id="log">(loading...)</div>
+  </div>
+</main>
+
+<footer>
+  <span>ESP32 Novy RF Bridge &mdash; <span id="host">--</span></span>
+  <span>Last update: <span class="mono" id="last-update">--</span></span>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c])); }
+function showToast(msg, type) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+function fmtUptime(s) {
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return (d ? d + 'd ' : '') + h + 'h ' + String(m).padStart(2, '0') + 'm';
+}
+function fmtAgo(s) {
+  if (s < 60) return s + ' s ago';
+  if (s < 3600) return Math.floor(s / 60) + ' min ago';
+  return fmtUptime(s) + ' ago';
+}
+function setStatus(cls, text) {
+  $('status-badge').className = 'badge ' + cls;
+  $('status-text').textContent = text;
+}
+function onOff(v) { return v ? 'ON' : 'OFF'; }
+
+/* Commands use the firmware 2.3 endpoints: POST /<cmd>, the reply text is shown. */
+document.querySelectorAll('[data-cmd]').forEach(btn => btn.addEventListener('click', async () => {
+  try {
+    const r = await fetch('/' + btn.dataset.cmd, {method: 'POST'});
+    const text = await r.text();
+    showToast((r.ok ? '✓ ' : '✗ ') + text, r.ok ? 'ok' : 'err');
+    if (r.ok) { btn.classList.add('sent'); setTimeout(() => btn.classList.remove('sent'), 600); }
+  } catch (e) { showToast('✗ Failed', 'err'); }
+  setTimeout(refresh, 1200);
+}));
+
+function render(d) {
+  const host = d.device;
+  $('brand').textContent = host;
+  document.title = host;
+  $('host').textContent = d.hostname + ' · ' + d.version;
+  const s = d.state;
+  $('v-novy-light').textContent = onOff(s.novy_light);
+  $('v-fan-speed').textContent = s.fan_speed ? s.fan_speed : 'off';
+  $('v-fan-light').textContent = onOff(s.fan_light);
+  $('v-fan-dir').textContent = s.fan_direction;
+  $('v-last').textContent = d.rf.last === null ? '--' : d.rf.last + ' (' + fmtAgo(d.rf.last_age_s) + ')';
+  $('v-led').textContent = d.light.on ? 'ON · rgb(' + d.light.rgb.join(',') + ') · ' + d.light.brightness : 'OFF';
+  $('v-fw').textContent = d.version + ' (' + d.partition + ')';
+  $('v-other').textContent = d.boot.other_project ? d.boot.other + ': ' + d.boot.other_project + ' ' + d.boot.other_version : (d.boot.other || '--') + ': empty';
+  $('v-uptime').textContent = fmtUptime(d.uptime);
+  const w = d.wifi;
+  $('v-wifi').textContent = w.connected ? w.ssid + (w.rssi === null ? '' : ' · ' + w.rssi + ' dBm') : (w.ap ? 'Setup AP active' : 'Not connected');
+  $('v-ip').textContent = w.ip || '--';
+  $('v-mqtt').textContent = !d.mqtt_enabled ? 'Disabled' : d.mqtt_connected ? 'Connected' : 'Not connected';
+  $('v-heap').textContent = d.heap.current + ' B (' + d.heap.percentage + ' %), min ' + d.heap.minimum;
+  $('v-time').textContent = d.time.synced ? new Date(d.time.epoch * 1000).toLocaleString() : 'Not synced';
+  $('last-update').textContent = new Date().toLocaleTimeString();
+  if (!d.rf.ready) setStatus('badge-error', 'RF down');
+  else if (w.ap) setStatus('badge-warning', 'Setup AP');
+  else if (!w.connected) setStatus('badge-error', 'No WiFi');
+  else if (d.mqtt_enabled && !d.mqtt_connected) setStatus('badge-warning', 'MQTT offline');
+  else setStatus('badge-success', 'Online');
+}
+
+async function refresh() {
+  try {
+    const r = await fetch('/api/status', {cache: 'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    render(await r.json());
+  } catch (e) { setStatus('badge-error', 'Offline'); }
+}
+
+/* Event log of 2.3 (GET /log): "<s>s: <message>" lines, coloured like the old page. */
+function colorLine(line) {
+  const m = line.match(/^(\d+s: )(.*)$/);
+  if (!m) return '<span>' + esc(line) + '</span>';
+  const msg = m[2];
+  let cls = '';
+  if (/RF sent|Fan RF/i.test(msg)) cls = 'log-rf';
+  else if (/MQTT|HA \(MQTT\)|Discovery/i.test(msg)) cls = 'log-mqtt';
+  else if (/fail|error|lost/i.test(msg)) cls = 'log-err';
+  else if (/warn|queue full/i.test(msg)) cls = 'log-warn';
+  else if (/IP Address|initialized|Heap|Firmware|OTA/i.test(msg)) cls = 'log-sys';
+  return '<span class="log-ts">' + esc(m[1]) + '</span><span class="' + cls + '">' + esc(msg) + '</span>';
+}
+
+async function refreshLog() {
+  try {
+    const r = await fetch('/log', {cache: 'no-store'});
+    if (!r.ok) return;
+    const lines = (await r.text()).split('\n').filter(l => l.length);
+    const el = $('log');
+    el.innerHTML = lines.length ? lines.map(colorLine).join('\n') : '(empty)';
+    if ($('log-auto').checked) el.scrollTop = el.scrollHeight;
+  } catch (e) {}
+}
+
+$('log-clear').addEventListener('click', async () => {
+  try { await fetch('/log/clear', {method: 'POST'}); } catch (e) {}
+  refreshLog();
+});
+
+refresh();
+refreshLog();
+setInterval(refresh, 5000);
+setInterval(refreshLog, 2000);
+</script>
+</body>
+</html>

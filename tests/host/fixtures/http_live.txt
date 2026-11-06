@@ -1,0 +1,7 @@
+# ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0
+# Responses of the Arduino firmware 2.3 (status line, content type, body).
+GET /heap 200 application/json {"current":170968,"initial":246016,"minimum":148928,"percentage":69,"color":"#30d158"}
+GET /rssi 200 application/json {"rssi":-39,"percentage":100,"color":"#30d158","bars":4}
+GET /mqtt-status 200 application/json {"connected":true}
+GET /favicon.ico 204 text/html
+GET /nonexistent-path 404 text/plain Not found

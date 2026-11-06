@@ -1,0 +1,574 @@
+<!-- ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0 -->
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVY-RF — Settings</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base-100:#1e2130;
+  --base-200:#191b29;
+  --base-300:#141621;
+  --base-content:#e8edf8;
+  --base-content-muted:rgba(232,237,248,.6);
+  --primary:#6366f1;
+  --primary-hover:#4f46e5;
+  --success:#4ade80;
+  --warning:#fbbf24;
+  --error:#f87171;
+  --border-color:rgba(255,255,255,.08);
+  --border-focus:#6366f1;
+  --radius-box:.5rem;
+  --radius-field:.25rem;
+  --font:ui-sans-serif,system-ui,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+html{font-size:16px;background:var(--base-300);color:var(--base-content);font-family:var(--font);min-height:100vh}
+a{color:inherit;text-decoration:none}
+.navbar{background:var(--base-200);border-bottom:1px solid var(--border-color);display:flex;flex-wrap:wrap;row-gap:.5rem;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;position:sticky;top:0;z-index:90;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.navbar-brand{display:flex;align-items:center;gap:.6rem;font-size:1.1rem;font-weight:700;letter-spacing:-.01em}
+.navbar-center{display:flex;gap:.25rem}
+.navbar-end{display:flex;align-items:center;gap:.75rem}
+.nav-link{display:flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:500;color:var(--base-content-muted);padding:.4rem .75rem;border-radius:var(--radius-field);transition:all .15s}
+.nav-link:hover{color:var(--base-content);background:rgba(255,255,255,.06)}
+.nav-link.active{color:var(--base-content);background:rgba(255,255,255,.08)}
+.peers{display:flex;align-items:center;min-width:0}
+.peers[hidden]{display:none}
+.peer-select{appearance:none;-webkit-appearance:none;color-scheme:dark;max-width:10rem;background:var(--base-100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23888daa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .6rem center;border:1px solid var(--border-color);border-radius:var(--radius-field);padding:.3rem 1.8rem .3rem .7rem;font-family:inherit;font-size:.8rem;font-weight:600;color:var(--base-content);text-overflow:ellipsis;cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s}
+.peer-select:hover{border-color:rgba(255,255,255,.2)}
+.peer-select:focus-visible{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+@media(max-width:640px){.navbar-end{margin-left:auto}.peer-select{max-width:11rem;font-size:16px}}
+.layout{display:flex;max-width:1100px;margin:0 auto;padding:1.5rem;gap:1.5rem;min-height:calc(100vh - 56px)}
+.sidebar{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:72px;align-self:flex-start}
+.sidebar-btn{display:flex;align-items:center;gap:.6rem;font-size:.85rem;font-weight:500;color:var(--base-content-muted);padding:.6rem .85rem;border-radius:var(--radius-box);border:none;background:none;cursor:pointer;transition:all .15s;text-align:left;font-family:inherit;width:100%}
+.sidebar-btn:hover{color:var(--base-content);background:rgba(255,255,255,.06)}
+.sidebar-btn.active{color:var(--base-content);background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25)}
+.content{flex:1;min-width:0}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--base-100);border:1px solid var(--border-color);border-radius:var(--radius-box);padding:1.5rem;margin-bottom:1rem}
+.card-header{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border-color)}
+.card-header.split{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.card-title{font-size:.9rem;font-weight:600;color:var(--base-content)}
+.card-subtitle{font-size:.75rem;color:var(--base-content-muted);margin-top:.2rem}
+.field{margin-bottom:1.1rem}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--base-content-muted);margin-bottom:.4rem}
+.field input,.field select,.field textarea{width:100%;background:var(--base-200);border:1px solid var(--border-color);border-radius:var(--radius-field);padding:.55rem .8rem;font-size:.875rem;color:var(--base-content);font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field textarea:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.field input[type="number"]{font-family:var(--font-mono)}
+.field textarea{font-family:var(--font-mono);line-height:1.5;resize:vertical}
+.field-row{display:grid;gap:.9rem;grid-template-columns:1fr 1fr}
+.field-row3{display:grid;gap:.9rem;grid-template-columns:1fr 1fr 1fr}
+.field-hint{font-size:.7rem;color:var(--base-content-muted);margin-top:.3rem;opacity:.7}
+.topic-preview{font-size:.7rem;font-family:var(--font-mono);color:var(--primary);background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--radius-field);padding:.35rem .65rem;margin-top:.4rem;word-break:break-all}
+.toggle-wrap{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--base-200);border:1px solid var(--border-color);border-radius:999px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;height:13px;width:13px;left:3px;top:3px;background:rgba(232,237,248,.4);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--primary);border-color:var(--primary)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(17px);background:#fff}
+.toggle-label{font-size:.78rem;font-weight:500;color:var(--base-content-muted);min-width:3.5rem}
+.actions{display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.5rem}
+.btn{font-size:.875rem;font-weight:600;padding:.55rem 1.25rem;border-radius:var(--radius-field);border:none;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:.4rem}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-primary:disabled{opacity:.5;cursor:default}
+.btn-ghost{background:transparent;color:var(--base-content-muted);border:1px solid var(--border-color)}
+.btn-ghost:hover{color:var(--base-content);background:rgba(255,255,255,.06)}
+.disabled-overlay{opacity:.35;pointer-events:none}
+.live{font-family:var(--font-mono);font-size:.75rem}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:.5rem 0;border-bottom:1px solid var(--border-color);gap:1rem}
+.stat-row:last-child{border-bottom:none}
+.stat-key{font-size:.8rem;color:var(--base-content-muted)}
+.stat-val{font-size:.8rem;font-weight:600;font-family:var(--font-mono);color:var(--base-content);text-align:right;word-break:break-all}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(1.5rem);opacity:0;background:var(--base-100);border:1px solid var(--border-color);border-radius:var(--radius-box);padding:.65rem 1.1rem;font-size:.85rem;font-weight:500;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(74,222,128,.4);color:var(--success)}
+.toast.err{border-color:rgba(248,113,113,.4);color:var(--error)}
+.console{background:#0d0f1a;border:1px solid var(--border-color);border-radius:var(--radius-box);padding:.75rem;font-family:var(--font-mono);font-size:.72rem;line-height:1.5;color:#94e2d5;height:calc(100vh - 200px);min-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.console-toolbar{display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem}
+.console-toolbar .btn{padding:.35rem .75rem;font-size:.75rem}
+.drop{border:2px dashed #45475a;border-radius:8px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem}
+.drop.hover{border-color:#89b4fa;background:#313244}
+.drop input{display:none}
+.drop-label{font-size:.9rem;color:#6c7086}
+.drop-name{font-size:.85rem;color:#a6e3a1;margin-top:.5rem;word-break:break-all}
+progress{width:100%;height:8px;border-radius:4px;appearance:none;-webkit-appearance:none;margin-bottom:.75rem;display:none}
+progress::-webkit-progress-bar{background:#313244;border-radius:4px}
+progress::-webkit-progress-value{background:#89b4fa;border-radius:4px;transition:width .1s}
+.ota-status{margin-top:.75rem;font-size:.85rem;min-height:1.2em;text-align:center}
+.ota-status.ok{color:#a6e3a1}
+.ota-status.err{color:#f38ba8}
+.badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px;border:1px solid}
+.badge-success{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:#4ade80}
+.badge-warning{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:#fbbf24}
+.badge-error{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);color:#f87171}
+.badge-neutral{background:rgba(255,255,255,.06);border-color:var(--border-color);color:var(--base-content-muted)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+footer{max-width:1100px;margin:0 auto;padding:1rem 1.5rem 2rem;font-size:.75rem;color:var(--base-content-muted);border-top:1px solid var(--border-color)}
+@media(max-width:768px){.layout{flex-direction:column;padding:1rem}.sidebar{width:100%;flex-direction:row;overflow-x:auto;position:static;gap:.25rem}.sidebar-btn{white-space:nowrap;padding:.5rem .7rem;font-size:.8rem}.field-row,.field-row3{grid-template-columns:1fr}}
+</style>
+<script src="/peers.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 16.1a10 10 0 0 1 0-8.2M19.1 7.9a10 10 0 0 1 0 8.2M7.8 13.4a4.5 4.5 0 0 1 0-2.8M16.2 10.6a4.5 4.5 0 0 1 0 2.8"/><circle cx="12" cy="12" r="1.5"/></svg>
+    <span id="brand">NOVY-RF</span>
+  </div>
+  <div class="navbar-center">
+    <a href="/" class="nav-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/config" class="nav-link active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Settings
+    </a>
+  </div>
+  <div class="navbar-end">
+    <nav id="peers" class="peers" hidden aria-label="Peers"></nav>
+    <span class="badge badge-neutral" id="status-badge"><span class="dot"></span><span id="status-text">Connecting</span></span>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <button class="sidebar-btn active" data-panel="network">Network</button>
+    <button class="sidebar-btn" data-panel="mqtt">MQTT</button>
+    <button class="sidebar-btn" data-panel="rf">RF</button>
+    <button class="sidebar-btn" data-panel="peers">Peers</button>
+    <button class="sidebar-btn" data-panel="console">Serial Console</button>
+    <button class="sidebar-btn" data-panel="ota">Firmware OTA</button>
+  </aside>
+
+  <div class="content">
+    <div id="panel-network" class="panel active">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">WiFi &amp; IP</div>
+          <div class="card-subtitle live" id="net-live">--</div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="wifi_ssid">SSID</label><input id="wifi_ssid" type="text" maxlength="32"></div>
+          <div class="field"><label for="wifi_pass">Password</label><input id="wifi_pass" type="password" maxlength="64" placeholder="(unchanged)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="hostname">Hostname</label><input id="hostname" type="text" maxlength="32"><div class="field-hint">Sent with DHCP and announced as &lt;hostname&gt;.local. MQTT topics and Home Assistant ids keep the device name.</div></div>
+          <div class="field"><label for="tx_power_dbm">TX power (dBm)</label><input id="tx_power_dbm" type="number" min="2" max="20" step="0.25"><div class="field-hint">2&ndash;20 dBm, default 20 (what firmware 2.3 used).</div></div>
+        </div>
+        <div class="field">
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="dhcp"><span class="toggle-slider"></span></label>
+            <span class="toggle-label">DHCP</span>
+          </div>
+        </div>
+        <div id="static-fields">
+          <div class="field-row3">
+            <div class="field"><label for="ip">IP address</label><input id="ip" type="text" maxlength="15"></div>
+            <div class="field"><label for="netmask">Netmask</label><input id="netmask" type="text" maxlength="15"></div>
+            <div class="field"><label for="gateway">Gateway</label><input id="gateway" type="text" maxlength="15"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="dns1">DNS 1</label><input id="dns1" type="text" maxlength="15" placeholder="(gateway)"></div>
+            <div class="field"><label for="dns2">DNS 2</label><input id="dns2" type="text" maxlength="15" placeholder="(none)"></div>
+          </div>
+        </div>
+        <div class="field-hint">The device reboots with the new settings. Without an IP within 2 minutes it returns to the previous settings.</div>
+        <div class="actions"><button type="button" class="btn btn-primary" id="net-save">Save &amp; reboot</button></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header split">
+          <div>
+            <div class="card-title">Setup access point</div>
+            <div class="card-subtitle" id="ap-live">--</div>
+          </div>
+          <button type="button" class="btn btn-ghost" id="ap-start">Start for 10 min</button>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="ap_ssid">SSID</label><input id="ap_ssid" type="text" maxlength="32"></div>
+          <div class="field"><label for="ap_pass">Password</label><input id="ap_pass" type="password" maxlength="63" placeholder="(unchanged)"><div class="field-hint">WPA2, 8&ndash;63 characters. Leave empty to keep it.</div></div>
+        </div>
+        <div class="field-hint">Starts by itself after 2 minutes without WiFi. Web UI on http://192.168.4.1/. SSID and password apply the next time the AP starts.</div>
+        <div class="actions"><button type="button" class="btn btn-primary" data-save="ap">Save</button></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Time</div>
+          <div class="card-subtitle live" id="time-live">--</div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="ntp1">NTP server 1</label><input id="ntp1" type="text" maxlength="63"></div>
+          <div class="field"><label for="ntp2">NTP server 2</label><input id="ntp2" type="text" maxlength="63" placeholder="(none)"></div>
+        </div>
+        <div class="field"><label for="tz">Timezone (POSIX TZ)</label><input id="tz" type="text" maxlength="47"><div class="field-hint">Central European Time: CET-1CEST,M3.5.0,M10.5.0/3</div></div>
+        <div class="actions"><button type="button" class="btn btn-primary" data-save="time">Save &amp; Apply</button></div>
+      </div>
+    </div>
+
+    <div id="panel-mqtt" class="panel">
+      <div class="card">
+        <div class="card-header split">
+          <div>
+            <div class="card-title">MQTT</div>
+            <div class="card-subtitle" id="mqtt-live">Not connected</div>
+          </div>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="mqtt_en"><span class="toggle-slider"></span></label>
+            <span class="toggle-label" id="mqtt-toggle-label">Disabled</span>
+          </div>
+        </div>
+        <div id="mqtt-fields">
+          <div class="field">
+            <label for="mqtt_uri">Broker URI</label>
+            <input id="mqtt_uri" type="text" maxlength="127" placeholder="mqtt://192.168.1.10:1883">
+            <div class="field-hint">IP or hostname. mqtt:// is added automatically.</div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="mqtt_user">Username</label><input id="mqtt_user" type="text" maxlength="63" placeholder="(optional)"></div>
+            <div class="field"><label for="mqtt_pass">Password</label><input id="mqtt_pass" type="password" maxlength="63" placeholder="(unchanged)"></div>
+          </div>
+          <div class="field">
+            <label for="mqtt_prefix">Topic prefix</label>
+            <input id="mqtt_prefix" type="text" maxlength="31">
+            <div class="topic-preview" id="topic-preview">ESP/NOVY-RF/button/light/set</div>
+            <div class="field-hint">Changing it moves every topic; Home Assistant follows through discovery. Client id: <span class="live" id="client-id">--</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn btn-primary" data-save="mqtt">Save &amp; Apply</button></div>
+    </div>
+
+    <div id="panel-rf" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">433 MHz transmitter</div>
+          <div class="card-subtitle live" id="rf-live">--</div>
+        </div>
+        <div id="rf-rows"></div>
+        <div class="field-hint" style="margin-top:1rem">Same waveforms as firmware 2.3 (rc-switch 2.6.4): NOVY protocol 12 at 320 &micro;s, fan protocol 1 at 248 &micro;s with 3 frames per command. NOVY commands send 10 frames per repeat until the first fan command after boot, 3 from then on, exactly as 2.3 did.</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Fan cycle positions</div>
+          <div class="card-subtitle">Next code index (0&ndash;7) per fan button; every button has its own cycle, starting at 0 after boot.</div>
+        </div>
+        <div id="fan-rows"></div>
+      </div>
+    </div>
+
+    <div id="panel-peers" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Peers</div>
+          <div class="card-subtitle">A drop-down at the top right of every page that opens your other devices. Paste the same list on each device: the entry named like this device is shown as the current one.</div>
+        </div>
+        <div class="field">
+          <label for="peers-text">Peer list</label>
+          <textarea id="peers-text" rows="8" spellcheck="false" autocomplete="off" placeholder="Boiler=http://192.168.1.20/&#10;Heater=http://192.168.1.21/"></textarea>
+          <div class="field-hint">One Label=URL per line, at most 12. Label: 1&ndash;24 letters, digits, spaces, _ . or -. URL: http:// or https://, at most 96 characters. The menu stays hidden until the list holds another device.</div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn btn-primary" id="peers-save">Save &amp; Apply</button></div>
+    </div>
+
+    <div id="panel-console" class="panel">
+      <div class="console-toolbar">
+        <button type="button" class="btn btn-ghost" id="log-refresh">Refresh</button>
+        <span class="toggle-wrap" style="margin-left:auto">
+          <label class="toggle"><input type="checkbox" id="log-auto" checked><span class="toggle-slider"></span></label>
+          <span class="toggle-label">Auto-scroll</span>
+        </span>
+      </div>
+      <div class="console" id="log-output">(loading...)</div>
+    </div>
+
+    <div id="panel-ota" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Firmware Update</div>
+          <div class="card-subtitle">Upload a new .bin firmware image over-the-air</div>
+        </div>
+        <div class="drop" id="ota-drop">
+          <input type="file" id="ota-file" accept=".bin">
+          <div class="drop-label">Click or drag a .bin file here</div>
+          <div class="drop-name" id="ota-filename"></div>
+        </div>
+        <div class="field">
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="ota-force"><span class="toggle-slider"></span></label>
+            <span class="toggle-label" style="min-width:0">Accept an image of another project (for example the Arduino firmware)</span>
+          </div>
+        </div>
+        <progress id="ota-progress" value="0" max="100"></progress>
+        <button type="button" class="btn btn-primary" id="ota-btn" disabled style="width:100%;justify-content:center">Upload &amp; Flash</button>
+        <div class="ota-status" id="ota-status"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Slots and boot guard</div>
+          <div class="card-subtitle">Three boots in a row that end within 60 s (crash, watchdog or power cycle) start the other slot. A new firmware without WiFi for 5 minutes does the same.</div>
+        </div>
+        <div id="boot-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>ESP32 Novy RF Bridge &mdash; <span id="host">--</span></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c])); }
+function showToast(msg, type) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+function fmtDur(s) { return Math.floor(s / 3600) + 'h ' + String(Math.floor(s % 3600 / 60)).padStart(2, '0') + 'm'; }
+function row(k, v) { return `<div class="stat-row"><span class="stat-key">${esc(k)}</span><span class="stat-val">${esc(v)}</span></div>`; }
+
+/* ── Panels ── */
+let logTimer = null, rfTimer = null;
+document.querySelectorAll('.sidebar-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  $('panel-' + btn.dataset.panel).classList.add('active');
+  clearInterval(logTimer); clearInterval(rfTimer); logTimer = rfTimer = null;
+  if (btn.dataset.panel === 'console') { refreshLog(); logTimer = setInterval(refreshLog, 2000); }
+  if (btn.dataset.panel === 'rf') { refreshStatus(); rfTimer = setInterval(refreshStatus, 2000); }
+}));
+
+/* ── Config ── */
+let device = 'NOVY-RF';
+function updateUi() {
+  $('static-fields').classList.toggle('disabled-overlay', $('dhcp').checked);
+  const en = $('mqtt_en').checked;
+  $('mqtt-toggle-label').textContent = en ? 'Enabled' : 'Disabled';
+  $('mqtt-fields').classList.toggle('disabled-overlay', !en);
+  $('topic-preview').textContent = ($('mqtt_prefix').value.trim() || 'ESP') + '/' + device + '/button/light/set';
+}
+
+async function loadConfig() {
+  try {
+    const r = await fetch('/api/config', {cache: 'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    ['wifi_ssid', 'ip', 'netmask', 'gateway', 'dns1', 'dns2', 'hostname', 'tx_power_dbm'].forEach(k => { $(k).value = d.net[k]; });
+    $('dhcp').checked = d.net.dhcp;
+    $('wifi_pass').placeholder = d.net.wifi_pass_set ? '(unchanged)' : '(not set)';
+    ['ntp1', 'ntp2', 'tz', 'mqtt_uri', 'mqtt_user', 'mqtt_prefix'].forEach(k => { $(k).value = d[k]; });
+    device = d.device;
+    $('mqtt_en').checked = d.mqtt_en;
+    $('mqtt_pass').placeholder = d.mqtt_pass_set ? '(unchanged)' : '(not set)';
+    $('ap_ssid').value = d.ap_ssid;
+    updateUi();
+  } catch (e) { showToast('Failed to load config', 'err'); }
+}
+
+function payloadFor(section) {
+  if (section === 'ap') {
+    const s = $('ap_ssid').value.trim(), p = $('ap_pass').value;
+    if (s.length < 1 || s.length > 32) { showToast('AP SSID must be 1-32 characters', 'err'); return null; }
+    if (p && (p.length < 8 || p.length > 63)) { showToast('AP password must be 8-63 characters', 'err'); return null; }
+    return p ? {ap_ssid: s, ap_pass: p} : {ap_ssid: s};
+  }
+  if (section === 'time') return {ntp1: $('ntp1').value.trim(), ntp2: $('ntp2').value.trim(), tz: $('tz').value.trim()};
+  if (section === 'mqtt') {
+    const p = {mqtt_en: $('mqtt_en').checked, mqtt_uri: $('mqtt_uri').value.trim(),
+               mqtt_user: $('mqtt_user').value.trim(), mqtt_prefix: $('mqtt_prefix').value.trim()};
+    if ($('mqtt_pass').value) p.mqtt_pass = $('mqtt_pass').value;
+    return p;
+  }
+  return null;
+}
+
+document.querySelectorAll('[data-save]').forEach(btn => btn.addEventListener('click', async () => {
+  const body = payloadFor(btn.dataset.save);
+  if (!body) return;
+  try {
+    const r = await fetch('/api/config', {method: 'POST', headers: {'Content-Type': 'application/json'},
+                                          body: JSON.stringify(body)});
+    if (!r.ok) { showToast((await r.text()) || 'Save failed', 'err'); return; }
+    showToast('Saved — settings applied', 'ok');
+    $('mqtt_pass').value = '';
+    $('ap_pass').value = '';
+    setTimeout(() => { loadConfig(); refreshStatus(); }, 1000);
+  } catch (e) { showToast('Save failed', 'err'); }
+}));
+
+function waitReconnect(onBack) {
+  const iv = setInterval(async () => {
+    try {
+      const r = await fetch('/api/status', {cache: 'no-store'});
+      if (r.ok) { clearInterval(iv); onBack(); }
+    } catch (e) {}
+  }, 2000);
+}
+
+$('net-save').addEventListener('click', async () => {
+  const body = {wifi_ssid: $('wifi_ssid').value.trim(), dhcp: $('dhcp').checked,
+                ip: $('ip').value.trim(), netmask: $('netmask').value.trim(), gateway: $('gateway').value.trim(),
+                dns1: $('dns1').value.trim(), dns2: $('dns2').value.trim(), hostname: $('hostname').value.trim(),
+                tx_power_dbm: parseFloat($('tx_power_dbm').value)};
+  if ($('wifi_pass').value) body.wifi_pass = $('wifi_pass').value;
+  try {
+    const r = await fetch('/api/network', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    if (!r.ok) { showToast((await r.text()) || 'Save failed', 'err'); return; }
+    $('net-save').disabled = true;
+    $('net-live').textContent = 'Rebooting with the new settings… if the address changed, open the new one.';
+    setTimeout(() => waitReconnect(() => location.reload()), 5000);
+  } catch (e) { showToast('Save failed', 'err'); }
+});
+
+$('ap-start').addEventListener('click', async () => {
+  try {
+    const r = await fetch('/api/setup-ap', {method: 'POST'});
+    showToast(r.ok ? 'Setup AP starting' : 'Failed', r.ok ? 'ok' : 'err');
+    setTimeout(refreshStatus, 2000);
+  } catch (e) { showToast('Failed', 'err'); }
+});
+
+['dhcp', 'mqtt_en'].forEach(id => $(id).addEventListener('change', updateUi));
+$('mqtt_prefix').addEventListener('input', updateUi);
+
+/* ── Live status ── */
+async function refreshStatus() {
+  try {
+    const r = await fetch('/api/status', {cache: 'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json(), w = d.wifi, rf = d.rf, b = d.boot;
+    const badge = $('status-badge');
+    if (!rf.ready) { badge.className = 'badge badge-error'; $('status-text').textContent = 'RF down'; }
+    else if (w.ap) { badge.className = 'badge badge-warning'; $('status-text').textContent = 'Setup AP'; }
+    else if (!w.connected) { badge.className = 'badge badge-error'; $('status-text').textContent = 'No WiFi'; }
+    else if (d.mqtt_enabled && !d.mqtt_connected) { badge.className = 'badge badge-warning'; $('status-text').textContent = 'MQTT offline'; }
+    else { badge.className = 'badge badge-success'; $('status-text').textContent = 'Online'; }
+    $('brand').textContent = d.device;
+    document.title = d.device + ' — Settings';
+    $('host').textContent = d.hostname + ' · ' + d.version;
+    $('client-id').textContent = d.mqtt_client_id;
+    if (!$('net-save').disabled)
+      $('net-live').textContent = w.connected
+        ? `Connected to ${w.ssid}${w.rssi === null ? '' : ' (' + w.rssi + ' dBm)'} · ${w.ip} / ${w.netmask} · gw ${w.gateway} · dns ${w.dns}` + (w.trial ? ' · testing new settings' : '')
+        : (w.trial ? 'Testing new settings, not connected yet' : 'Not connected');
+    $('ap-live').textContent = w.ap ? 'Active' + (w.ap_manual_left_s ? ' · ' + Math.ceil(w.ap_manual_left_s / 60) + ' min left' : ' (no WiFi)') : 'Off';
+    $('time-live').textContent = d.time.synced
+      ? 'Synced · ' + new Date(d.time.epoch * 1000).toLocaleString() + ' · last sync ' + new Date(d.time.last_sync * 1000).toLocaleTimeString()
+      : 'Not synced';
+    $('mqtt-live').textContent = !d.mqtt_enabled ? 'Disabled' : d.mqtt_connected ? 'Connected' : 'Not connected';
+    $('rf-live').textContent = rf.ready ? 'Ready on GPIO' + rf.gpio + ' (RMT)' : 'Not available';
+    $('rf-rows').innerHTML =
+      row('RF codes', rf.codes === 'example' ? 'example values: the fan will not respond (see README)' : 'own (.local/rf_codes.h)') +
+      row('Novy channel', rf.novy_channel) +
+      row('Commands sent', rf.sent) + row('Waiting in the queue', rf.queued) + row('Dropped (queue full)', rf.dropped) +
+      row('Transmit errors', rf.failed) + row('NOVY frames per repeat', rf.novy_frames_per_send) +
+      row('Last command', rf.last === null ? '--' : rf.last + ' (' + rf.last_age_s + ' s ago)');
+    $('fan-rows').innerHTML = Object.keys(rf.fan_cycle).map(k => row(k, rf.fan_cycle[k])).join('');
+    $('boot-rows').innerHTML =
+      row('Running slot', d.partition + ' · ' + d.version) +
+      row('Other slot (rollback target)', b.other + (b.other_project ? ' · ' + b.other_project + ' ' + b.other_version : ' · no app')) +
+      row('Fast boots of this image', b.fast_boots) + row('Proven (60 s up with WiFi)', b.proven ? 'yes' : 'not yet') +
+      row('Bootloader verify pending', b.pending_verify ? 'yes' : 'no') + row('Boot guard', b.guard ? 'active' : 'off (NVS unavailable)') +
+      row('Last reset', d.reset_reason);
+  } catch (e) {
+    $('status-badge').className = 'badge badge-error';
+    $('status-text').textContent = 'Offline';
+  }
+}
+
+/* ── Peers ── */
+function peersText(d) { return d.peers.map(p => p.name + '=' + p.url).join('\n'); }
+
+async function loadPeers() {
+  try {
+    const r = await fetch('/api/peers', {cache: 'no-store'});
+    if (r.ok) $('peers-text').value = peersText(await r.json());
+  } catch (e) {}
+}
+
+$('peers-save').addEventListener('click', async () => {
+  const peers = $('peers-text').value.split('\n').map(l => l.trim()).filter(Boolean).join(';');
+  try {
+    const r = await fetch('/api/peers', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({peers}),
+    });
+    if (!r.ok) { showToast((await r.text()) || 'Save failed', 'err'); return; }
+    const d = await r.json();
+    $('peers-text').value = peersText(d);
+    if (typeof peersRender === 'function') peersRender(d);
+    showToast('Saved — peers applied', 'ok');
+  } catch (e) { showToast('Save failed', 'err'); }
+});
+
+/* ── Serial console ── */
+async function refreshLog() {
+  try {
+    const r = await fetch('/api/log', {cache: 'no-store'});
+    const el = $('log-output');
+    el.textContent = await r.text();
+    if ($('log-auto').checked) el.scrollTop = el.scrollHeight;
+  } catch (e) {}
+}
+$('log-refresh').addEventListener('click', refreshLog);
+
+/* ── OTA ── */
+const otaDrop = $('ota-drop'), otaFile = $('ota-file'), otaBtn = $('ota-btn');
+let otaBlob = null;
+otaDrop.addEventListener('click', () => otaFile.click());
+otaDrop.addEventListener('dragover', e => { e.preventDefault(); otaDrop.classList.add('hover'); });
+otaDrop.addEventListener('dragleave', () => otaDrop.classList.remove('hover'));
+otaDrop.addEventListener('drop', e => {
+  e.preventDefault(); otaDrop.classList.remove('hover');
+  if (e.dataTransfer.files.length) pickFile(e.dataTransfer.files[0]);
+});
+otaFile.addEventListener('change', () => { if (otaFile.files.length) pickFile(otaFile.files[0]); });
+
+function pickFile(f) {
+  if (!f.name.endsWith('.bin')) { showToast('Select a .bin file', 'err'); return; }
+  otaBlob = f;
+  $('ota-filename').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  otaBtn.disabled = false;
+}
+
+otaBtn.addEventListener('click', () => {
+  if (!otaBlob) return;
+  otaBtn.disabled = true;
+  const prog = $('ota-progress'), stat = $('ota-status');
+  prog.style.display = 'block'; prog.value = 0;
+  stat.textContent = 'Uploading...'; stat.className = 'ota-status';
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/ota' + ($('ota-force').checked ? '?force=1' : ''));
+  xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+  xhr.upload.onprogress = e => { if (e.lengthComputable) prog.value = (e.loaded / e.total) * 100; };
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      stat.textContent = 'Flashed! Rebooting...'; stat.className = 'ota-status ok';
+      setTimeout(() => waitReconnect(() => { stat.textContent = 'Device is back online!'; }), 3000);
+    } else {
+      stat.textContent = 'Failed: ' + xhr.responseText; stat.className = 'ota-status err';
+      otaBtn.disabled = false;
+    }
+  };
+  xhr.onerror = () => { stat.textContent = 'Upload error'; stat.className = 'ota-status err'; otaBtn.disabled = false; };
+  xhr.send(otaBlob);
+});
+
+loadConfig().then(refreshStatus);
+loadPeers();
+setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

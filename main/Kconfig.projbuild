@@ -1,0 +1,59 @@
+# ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0
+menu "Novy RF Bridge"
+
+    config NOVY_WIFI_SSID
+        string "Default WiFi SSID"
+        default "myssid"
+
+    config NOVY_WIFI_PASSWORD
+        string "Default WiFi password"
+        default "mypassword"
+
+    config NOVY_DEVICE_NAME
+        string "Device name: MQTT topics, HA unique ids, MQTT client id, default hostname"
+        default "NOVY-RF"
+        help
+            Keep the HOSTNAME of the Arduino version here to keep its MQTT topics and
+            Home Assistant entities.
+
+    config NOVY_AP_SSID
+        string "Setup access point SSID"
+        default "NOVY-RF-setup"
+
+    config NOVY_AP_PASSWORD
+        string "Setup access point password (WPA2, at least 8 characters)"
+        default "changeme123"
+
+    config NOVY_MQTT_URI
+        string "Default MQTT broker (empty = MQTT off)"
+        default ""
+
+    config NOVY_MQTT_USER
+        string "Default MQTT user"
+        default ""
+
+    config NOVY_MQTT_PASSWORD
+        string "Default MQTT password"
+        default ""
+
+    config NOVY_STATIC_IP
+        string "Static IP address (used when DHCP is switched off on the Network tab)"
+        default "192.168.1.50"
+
+    config NOVY_STATIC_NETMASK
+        string "Static netmask"
+        default "255.255.255.0"
+
+    config NOVY_STATIC_GATEWAY
+        string "Static gateway"
+        default "192.168.1.1"
+
+    config NOVY_STATIC_DNS
+        string "Static DNS server (empty = the gateway)"
+        default ""
+
+    config NOVY_LED_GPIO
+        int "Status LED (WS2812) GPIO"
+        default 8
+
+endmenu

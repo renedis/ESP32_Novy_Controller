@@ -1,0 +1,5 @@
+ESP/NOVY-RF/status online
+ESP/NOVY-RF/state/novy_light OFF
+ESP/NOVY-RF/state/fan_speed 0
+ESP/NOVY-RF/state/fan_light OFF
+ESP/NOVY-RF/state/fan_direction forward

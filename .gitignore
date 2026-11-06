@@ -1,1 +1,18 @@
-config.h
+# ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0
+build/
+sdkconfig
+sdkconfig.old
+sdkconfig.secrets
+dependencies.lock
+managed_components/
+.DS_Store
+tests/host/test_*
+!tests/host/test_*.c
+!tests/host/test_*.cpp
+tests/host/obj/
+.cache/
+__pycache__/
+tests/qemu/build/
+# Your own values (device name, RF codes, real captures, notes): never in the repository
+.local/
+tests/host/out/

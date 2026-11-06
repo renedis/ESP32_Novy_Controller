@@ -1,0 +1,12 @@
+# ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0
+menu "Boot guard QEMU test"
+    config BGTEST_CRASH
+        bool "Abort right after boot_guard_early() (crash loop)"
+        default y
+    config BGTEST_NO_IP
+        bool "Never report an IP (network deadline)"
+        default n
+    config BGTEST_SECONDS
+        int "Seconds to run the 1 s tick"
+        default 75
+endmenu

@@ -1,0 +1,5 @@
+# ESP32 Novy RF Bridge — Copyright (c) 2026 renedis — GPL-3.0
+dependencies:
+  idf: ">=5.5.0"
+  espressif/mdns: "1.13.1"
+  espressif/led_strip: "3.0.3"
